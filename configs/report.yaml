@@ -1,0 +1,46 @@
+final_model:
+  name: ResNet18
+  config_path: configs/resnet18.yaml
+  checkpoint_path: outputs/checkpoints/resnet18_64_best.pt
+  processed_dir: data/processed
+
+output:
+  directory: outputs/final_report
+  markdown_path: FINAL_REPORT.md
+  error_examples: 20
+  targeted_false_positives_per_class: 6
+
+comparisons:
+  - name: Majority baseline
+    kind: baseline
+    validation_metrics: outputs/experiments/random_forest_spatial/majority_validation_metrics.json
+  - name: Random Forest
+    kind: baseline
+    validation_metrics: outputs/experiments/random_forest_spatial/validation_metrics.json
+  - name: Custom CNN
+    kind: deep
+    validation_metrics: outputs/experiments/custom_cnn_64/evaluation/val/metrics.json
+    history: outputs/experiments/custom_cnn_64/history.json
+    checkpoint: outputs/checkpoints/custom_cnn_64_best.pt
+  - name: ResNet18
+    kind: deep
+    validation_metrics: outputs/experiments/resnet18_64/evaluation/val/metrics.json
+    history: outputs/experiments/resnet18_64/history.json
+    checkpoint: outputs/checkpoints/resnet18_64_best.pt
+  - name: ConvNeXt-Tiny
+    kind: deep
+    validation_metrics: outputs/experiments/convnext_tiny_64/evaluation/val/metrics.json
+    history: outputs/experiments/convnext_tiny_64/history.json
+    checkpoint: outputs/checkpoints/convnext_tiny_64_best.pt
+  - name: Swin-Tiny (collapsed)
+    kind: failed
+    validation_metrics: outputs/experiments/swin_tiny_64/evaluation/val/metrics.json
+    history: outputs/experiments/swin_tiny_64/history.json
+    checkpoint: outputs/checkpoints/swin_tiny_64_best.pt
+  - name: Swin-Tiny stable
+    kind: deep
+    validation_metrics: outputs/experiments/swin_tiny_64_stable/evaluation/val/metrics.json
+    history: outputs/experiments/swin_tiny_64_stable/history.json
+    checkpoint: outputs/checkpoints/swin_tiny_64_stable_best.pt
+
+test_metrics: outputs/experiments/resnet18_64/evaluation/test/metrics.json

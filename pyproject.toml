@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wm811k"
+version = "0.1.0"
+description = "Reproducible wafer-map defect classification experiments on WM-811K"
+requires-python = ">=3.9"
+dependencies = [
+    "matplotlib>=3.6",
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "PyYAML>=6.0",
+    "scikit-learn>=1.2",
+    "torch>=2.7",
+    "torchvision>=0.22",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"

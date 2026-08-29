@@ -1,0 +1,17 @@
+raw_path: data/LSWMD.pkl
+processed_dir: data/processed
+image_size: 64
+preserve_aspect_ratio: true
+seed: 42
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+  candidates: 64
+
+eda:
+  output_dir: outputs/figures/eda
+  summary_path: outputs/experiments/eda_summary.json
+  samples_per_class: 4
+  analysis_batch_size: 4096

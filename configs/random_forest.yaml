@@ -1,0 +1,22 @@
+experiment:
+  name: random_forest_spatial
+  seed: 42
+  output_dir: outputs/experiments
+  checkpoint_dir: outputs/checkpoints
+
+data:
+  processed_dir: data/processed
+
+features:
+  cache_path: data/processed/spatial_features.npy
+  batch_size: 2048
+  force_rebuild: false
+
+model:
+  n_estimators: 300
+  max_depth: 24
+  min_samples_leaf: 2
+  max_features: sqrt
+  class_weight: balanced_subsample
+  n_jobs: -1
+  verbose: 0

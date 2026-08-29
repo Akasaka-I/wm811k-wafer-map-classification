@@ -1,0 +1,18 @@
+name: py39
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+      - matplotlib==3.6.3
+      - numpy==1.23.5
+      - pandas==1.5.3
+      - PyYAML==6.0
+      - scikit-learn==1.2.1
+      - torch==2.7.1
+      - torchvision==0.22.1
+
+# Install the CUDA-enabled PyTorch wheels separately on Windows:
+# python -m pip install torch==2.7.1 torchvision==0.22.1 \
+#   --index-url https://download.pytorch.org/whl/cu128

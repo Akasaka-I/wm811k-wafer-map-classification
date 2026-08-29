@@ -1,0 +1,27 @@
+experiment:
+  name: resnet18_64
+  seed: 42
+  output_dir: outputs/experiments
+  checkpoint_dir: outputs/checkpoints
+data:
+  processed_dir: data/processed
+  batch_size: 192
+  num_workers: 0
+model:
+  name: resnet18
+  input_channels: 2
+  num_classes: 9
+  pretrained: false
+training:
+  device: auto
+  epochs: 50
+  mixed_precision: true
+  early_stopping_patience: 8
+loss:
+  name: weighted_cross_entropy
+optimizer:
+  name: adamw
+  learning_rate: 0.0005
+  weight_decay: 0.0001
+scheduler:
+  name: cosine
