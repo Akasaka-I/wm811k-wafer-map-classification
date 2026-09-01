@@ -122,7 +122,7 @@ def load_model_experiments(path: Path) -> list[dict[str, Any]]:
     if not isinstance(records, list):
         raise ValueError("Model-comparison JSON must contain a list")
 
-    transformed_record = []
+    transformed_records = []
 
     for index, record in enumerate(records):
         if not isinstance(record, dict):
@@ -133,7 +133,7 @@ def load_model_experiments(path: Path) -> list[dict[str, Any]]:
             missing = ", ".join(sorted(missing_fields))
             raise ValueError(f"Record {index} is missing fields: {missing}")
 
-        transformed_record.append(
+        transformed_records.append(
             {
                 "model_name": str(record["name"]),
                 "model_kind": str(record["kind"]),
@@ -152,10 +152,15 @@ def load_model_experiments(path: Path) -> list[dict[str, Any]]:
                 ),
             }
         )
-    return transformed_record
+    return transformed_records
 
-def load_class_metrics(path: Path, model_name: str, split_name: str,) ->list[dict[str, Any]]:
+def load_class_metrics(
+    path: Path,
+    model_name: str,
+    split_name: str,
+) -> list[dict[str, Any]]:
     """Load per-class metrics from an evaluation JSON file."""
+
     if split_name not in {"validation", "test"}:
         raise ValueError(
             f"Unsupported split name:{split_name}. "
@@ -203,7 +208,11 @@ def load_class_metrics(path: Path, model_name: str, split_name: str,) ->list[dic
         )
     return transformed_records
 
-def load_prediction_errors(path: Path, model_name: str, split_name: str,) -> list[dict[str, Any]]:
+def load_prediction_errors(
+    path: Path,
+    model_name: str,
+    split_name: str,
+) -> list[dict[str, Any]]:
     """Load prediction errors from JSON."""
 
     if split_name not in {"validation", "test"}:

@@ -10,12 +10,12 @@ from psycopg import Connection
 DATABASE_URL_ENV = "DATABASE_URL"
 
 def get_database_url() -> str:
-    """Read the PostgreSQL connection URL grom the environment."""
+    """Read the PostgreSQL connection URL from the environment."""
 
     database_url = os.getenv(DATABASE_URL_ENV)
     if not database_url:
         raise RuntimeError(
-            f"{DATABASE_URL_ENV} is not set."
+            f"{DATABASE_URL_ENV} is not set. "
             "Set it to a PostgreSQL connection URL before running database commands."
         )
     return database_url
