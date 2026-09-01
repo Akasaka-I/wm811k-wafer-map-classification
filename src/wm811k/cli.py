@@ -52,6 +52,45 @@ def build_parser() -> argparse.ArgumentParser:
     report_parser.add_argument("--config", type=Path, default=Path("configs/report.yaml"))
 
     subparsers.add_parser("models", help="List registered PyTorch models")
+    subparsers.add_parser(
+        "db-check",
+        help="Check the PostgreSQL database connection",
+    )
+    db_import_parser = subparsers.add_parser(
+        "db-import",
+        help="Import final experiment results into PostgreSQL",
+    )
+
+    db_import_parser.add_argument(
+        "--model-comparison",
+        type=Path,
+        default=Path("outputs/final_report/model_comparison.json"),
+    )
+
+    db_import_parser.add_argument(
+        "--class-metrics",
+        type=Path,
+        default=Path(
+            "outputs/experiments/resnet18_64/evaluation/test/metrics.json"
+        ),
+    )
+
+    db_import_parser.add_argument(
+        "--prediction-errors",
+        type=Path,
+        default=Path("outputs/final_report/high_confidence_errors.json"),
+    )
+
+    db_import_parser.add_argument(
+        "--model-name",
+        default="ResNet18",
+    )
+
+    db_import_parser.add_argument(
+        "--split",
+        choices=("validation", "test"),
+        default="test",
+    )
     return parser
 
 
@@ -111,6 +150,47 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
         from wm811k.models.factory import available_models
 
         print("\n".join(available_models()))
+        return
+
+    if args.command == "db-check":
+        from wm811k.storage.database import check_database_connection
+
+        database_name, database_user = check_database_connection()
+        print(f"Connected to database '{database_name}' as user '{database_user}'")
+        return
+
+    if args.command == "db-import":
+        from wm811k.storage.importer import (
+            import_class_metrics,
+            import_model_experiments,
+            import_prediction_errors,
+            load_class_metrics,
+            load_model_experiments,
+            load_prediction_errors,
+        )
+
+        model_records = load_model_experiments(args.model_comparison)
+        class_records = load_class_metrics(
+            args.class_metrics,
+            args.model_name,
+            args.split,
+        )
+        error_records = load_prediction_errors(
+            args.prediction_errors,
+            args.model_name,
+            args.split,
+        )
+
+        imported_models = import_model_experiments(model_records)
+        imported_classes = import_class_metrics(class_records)
+        imported_errors = import_prediction_errors(error_records)
+
+        print(
+            "Imported "
+            f"{imported_models} models, "
+            f"{imported_classes} class metrics, and "
+            f"{imported_errors} prediction errors"
+        )
         return
 
     raise RuntimeError(f"Unhandled command: {args.command}")
