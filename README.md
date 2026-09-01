@@ -112,11 +112,81 @@ Build the frozen final comparison, error analysis, and Grad-CAM report:
 python main.py report --config configs/report.yaml
 ```
 
+## PostgreSQL ETL and Docker
+
+Final experiment artifacts can be loaded into PostgreSQL for reproducible analysis:
+
+```text
+Experiment JSON
+      |
+      v
+Python ETL CLI
+      |
+      v
+PostgreSQL
+  |-- model_experiments
+  |-- class_metrics
+  `-- prediction_errors
+```
+
+The database schema includes foreign keys, validation constraints, indexes, and idempotent
+upserts. The accompanying analysis queries demonstrate joins, CTEs, window functions,
+conditional aggregation, and model/error ranking.
+
+Create the local environment file:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Set a local development password in `.env`, then start PostgreSQL:
+
+```powershell
+docker compose up -d db
+docker compose ps
+```
+
+Build the non-root ETL image and verify the database connection:
+
+```powershell
+docker compose --profile tools build app
+docker compose run --rm app db-check
+```
+
+After generating the final experiment report, import the model comparison, per-class test metrics,
+and prediction errors:
+
+```powershell
+docker compose run --rm app db-import
+```
+
+The import is idempotent: rerunning the command updates existing rows instead of creating
+duplicates. Experiment outputs are mounted read-only at runtime and are not copied into the ETL
+image.
+
+Run the SQL analysis queries:
+
+```powershell
+Get-Content .\sql\analysis_queries.sql -Raw |
+  docker compose exec -T db psql -U wm811k -d wm811k
+```
+
+Stop the services without deleting the persistent database volume:
+
+```powershell
+docker compose down
+```
+
+Do not use `docker compose down -v` unless the database volume should also be deleted.
+
 Run tests:
 
 ```powershell
 python -m unittest discover -s tests -v
 ```
+
+The suite contains 15 unit tests covering data processing, model construction, training utilities,
+Grad-CAM, and PostgreSQL ETL loaders.
 
 ## Data representation
 
